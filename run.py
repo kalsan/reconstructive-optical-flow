@@ -1,13 +1,13 @@
 import cv2
 import numpy as np
-import icp
 from realsensecam import realsensecam
+from reconstructive_optical_flow import ReconstructiveOpticalFlow
 
 
 def acquire_masks():
     # Find the hand
     _, depth_th_hand = cv2.threshold(
-        realsensecam().depth_blurred, 2, 255, cv2.THRESH_BINARY
+        realsensecam().depth_blurred, 1, 255, cv2.THRESH_BINARY
     )
 
     # Create the hand mask, the largest depth contour is assumed to be the hand
@@ -35,6 +35,8 @@ def acquire_masks():
         cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE
     )
+    if len(shape_contours) == 0:
+        return None, None
     largest_shape_cnt = max(shape_contours, key=lambda c: cv2.contourArea(c))
 
     # Create a mask that should only contain the largest shape without hand
@@ -44,15 +46,31 @@ def acquire_masks():
     shape_mask_filtered[shape_mask_filtered != 0] = 1
     return shape_mask_filtered, largest_shape_cnt
 
+
 realsensecam()
+rof = None
+new_img = None
+new_shape_mask_filtered = None
 while True:
     # Read a new frame from the camera
     realsensecam().acquire_frames()
-    shape_mask_filtered, largest_shape_cnt = acquire_masks()
+    new_shape_mask_filtered, largest_shape_cnt = acquire_masks()
+    if new_shape_mask_filtered is None:
+        continue
+
+    new_img = cv2.cvtColor(realsensecam().bgr, cv2.COLOR_BGR2GRAY)
+    if rof is None:
+        rof = ReconstructiveOpticalFlow(new_img, new_shape_mask_filtered)
+        continue
+
+    rof.update(
+        new_img,
+        new_shape_mask_filtered
+    )
 
     pretty_image = realsensecam().bgr.copy()
     colored_overlay = np.zeros_like(pretty_image)
-    colored_overlay[shape_mask_filtered == 0] = (0, 0, 255)
+    colored_overlay[new_shape_mask_filtered == 0] = (0, 0, 255)
     pretty_image = cv2.addWeighted(colored_overlay, 0.5, pretty_image, 1, 0)
     cv2.drawContours(pretty_image, [largest_shape_cnt], 0, (255, 255, 255))
     cv2.imshow("Overview", pretty_image)
