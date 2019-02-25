@@ -89,4 +89,6 @@ class ReconstructiveOpticalFlow:
         )
 
     def __get_mask_from_img_mask(self, coords, img_mask):
-        return img_mask[tuple(np.swapaxes(coords, 0, 1).astype(int))]
+        rearranged_coords = np.swapaxes(coords, 0, 1).astype(int)
+        rearranged_coords[[0, 1]] = rearranged_coords[[1, 0]]
+        return img_mask[tuple(rearranged_coords)]
