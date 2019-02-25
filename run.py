@@ -47,6 +47,11 @@ def acquire_masks():
     return shape_mask_filtered, largest_shape_cnt
 
 
+def visualize_pts(img, pts, color):
+    for pt in pts.astype(int):
+        cv2.circle(img, tuple(pt), 1, color)
+
+
 realsensecam()
 rof = None
 new_img = None
@@ -73,6 +78,9 @@ while True:
     colored_overlay[new_shape_mask_filtered == 0] = (0, 0, 255)
     pretty_image = cv2.addWeighted(colored_overlay, 0.5, pretty_image, 1, 0)
     cv2.drawContours(pretty_image, [largest_shape_cnt], 0, (255, 255, 255))
+    visualize_pts(pretty_image, rof.pts_init.masked_array(), (255, 255, 255))
+    visualize_pts(pretty_image, rof.pts_old.masked_array(), (255, 0, 0))
+    visualize_pts(pretty_image, rof.pts_new.masked_array(), (0, 255, 255))
     cv2.imshow("Overview", pretty_image)
     k = cv2.waitKey(1)
     if k == ord('q'):
