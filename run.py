@@ -82,6 +82,7 @@ while True:
     visualize_pts(pretty_image, rof.pts_init.masked_array(), (255, 255, 255))
     visualize_pts(pretty_image, rof.pts_old.masked_array(), (255, 0, 0))
     visualize_pts(pretty_image, rof.pts_new.masked_array(), (0, 255, 255))
+    visualize_pts(pretty_image, largest_shape_cnt[:, 0], (0, 255, 0))
     cv2.imshow("Overview", pretty_image)
     k = cv2.waitKey(1)
     if k == ord('q'):
