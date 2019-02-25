@@ -62,6 +62,10 @@ class ReconstructiveOpticalFlow:
         # Apply it onto pts_new as well
         self.pts_new.and_mask(st_enlarged.astype(np.uint8))
 
+        # Return if there are no good points left
+        if len(self.pts_new.masked_array()) == 0:
+            return
+
         # Apply pts_new's mask to pts_init in order to make them the same size
         self.pts_init.set_mask(self.pts_new.mask)
 
