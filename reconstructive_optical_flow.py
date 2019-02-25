@@ -57,7 +57,7 @@ class ReconstructiveOpticalFlow:
         )
 
         # Create a mask that contains the mask of pts_old anded with st
-        st_enlarged = self.pts_old.mask
+        st_enlarged = self.pts_old.mask.copy()
         st_enlarged[st_enlarged != 0] = st[:, 0]
         # Apply it onto pts_new as well
         self.pts_new.and_mask(st_enlarged.astype(np.uint8))

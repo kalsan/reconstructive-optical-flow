@@ -78,6 +78,7 @@ while True:
     colored_overlay[new_shape_mask_filtered == 0] = (0, 0, 255)
     pretty_image = cv2.addWeighted(colored_overlay, 0.5, pretty_image, 1, 0)
     cv2.drawContours(pretty_image, [largest_shape_cnt], 0, (255, 255, 255))
+    visualize_pts(pretty_image, rof.pts_init.unmasked_array(), (150, 150, 150))
     visualize_pts(pretty_image, rof.pts_init.masked_array(), (255, 255, 255))
     visualize_pts(pretty_image, rof.pts_old.masked_array(), (255, 0, 0))
     visualize_pts(pretty_image, rof.pts_new.masked_array(), (0, 255, 255))
