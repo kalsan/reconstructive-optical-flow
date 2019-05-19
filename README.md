@@ -1,3 +1,7 @@
+# Notice: abandoned
+
+This project was developed for testing purposes for my master thesis and is now abandoned.
+
 # Reconstructive optical flow
 
 This is a prototype for a simple algorithm that should improve optical flows for 2D affine transformations.
